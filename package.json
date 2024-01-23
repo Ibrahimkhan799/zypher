@@ -1,6 +1,6 @@
 {
   "name": "serverifier",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A library to use server functions inside a client application.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
