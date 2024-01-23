@@ -11,13 +11,9 @@ type ApiCallbackProps = {
 
 declare function init(port?: port, route?: route): void;
 declare function setRoute(api: api, data?: data): void;
-declare const Serverifier: {
-    setRoute: typeof setRoute;
-    init: typeof init;
-};
 
 declare const express: any;
 declare const router: any;
 declare const app: any;
 
-export { type ApiCallbackProps, type api, app, type data, Serverifier as default, express, type port, type route, router };
+export { type ApiCallbackProps, type api, app, type data, express, init, type port, type route, router, setRoute };

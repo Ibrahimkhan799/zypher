@@ -26,16 +26,10 @@ function setRoute(api, data) {
     res.send(data);
   });
 }
-var Serverifier = {
-  setRoute,
-  init
-};
-
-// lib/index.ts
-var lib_default = Serverifier;
 export {
   app,
-  lib_default as default,
   express,
-  router
+  init,
+  router,
+  setRoute
 };

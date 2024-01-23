@@ -21,9 +21,10 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var lib_exports = {};
 __export(lib_exports, {
   app: () => app,
-  default: () => lib_default,
   express: () => express,
-  router: () => router
+  init: () => init,
+  router: () => router,
+  setRoute: () => setRoute
 });
 module.exports = __toCommonJS(lib_exports);
 
@@ -47,16 +48,11 @@ function setRoute(api, data) {
     res.send(data);
   });
 }
-var Serverifier = {
-  setRoute,
-  init
-};
-
-// lib/index.ts
-var lib_default = Serverifier;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   app,
   express,
-  router
+  init,
+  router,
+  setRoute
 });
