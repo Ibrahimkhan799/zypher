@@ -12,16 +12,16 @@ var router = express.Router();
 var app = express();
 
 // lib/functions.ts
-function init({ port = 3e3, route = "/" }) {
+function init(port, route) {
+  port = port || 3e3;
+  route = route || "/";
   app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
   });
   app.use(route, router);
 }
-function setRoute({
-  api,
-  data = "Just Created a Simple route using Serverifier"
-}) {
+function setRoute(api, data) {
+  data = data || "Just Created a new route using Serverifier.";
   router.get(api, ({ req, res }) => {
     res.send(data);
   });

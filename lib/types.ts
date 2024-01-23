@@ -1,14 +1,9 @@
 import { Request, Response } from "express";
 
-export type InitProps = {
-  port: number;
-  route: string;
-};
-
-export type SetRouteProps = {
-  api: string;
-  data: object | string | undefined | null | JSON;
-};
+export type port = number;
+export type route = string;
+export type api = string;
+export type data = object | string | undefined | null | JSON;
 
 export type ApiCallbackProps = {
   req: Request;
