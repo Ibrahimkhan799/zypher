@@ -15,7 +15,7 @@ npm install serverifier@latest
 <h1>Usage</h1>
 
 ```js
-const Serverifier = require("your-library-name");
+const Serverifier = require("serverifier");
 // initialize the server
 Serverifier.init();
 

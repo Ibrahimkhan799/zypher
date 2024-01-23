@@ -16,7 +16,6 @@ function setRoute(api: api, data?: data): void {
     res.send(data);
   });
 }
-setRoute("/");
 
 export const Serverifier = {
   setRoute,

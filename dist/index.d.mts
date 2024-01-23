@@ -20,4 +20,4 @@ declare const express: any;
 declare const router: any;
 declare const app: any;
 
-export { type ApiCallbackProps, Serverifier, type api, app, type data, express, type port, type route, router };
+export { type ApiCallbackProps, type api, app, type data, Serverifier as default, express, type port, type route, router };
