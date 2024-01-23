@@ -1,7 +1,7 @@
 import { ApiCallbackProps, api, data, port, route } from "./types";
 import { router, app } from "./variables";
 
-export function init(port?: port, route?: route): void {
+function init(port?: port, route?: route): void {
   port = port || 3000;
   route = route || "/";
   app.listen(port, () => {
@@ -10,9 +10,15 @@ export function init(port?: port, route?: route): void {
   app.use(route, router);
 }
 
-export function setRoute(api: api, data?: data): void {
+function setRoute(api: api, data?: data): void {
   data = data || "Just Created a new route using Serverifier.";
   router.get(api, ({ req, res }: ApiCallbackProps) => {
     res.send(data);
   });
 }
+setRoute("/");
+
+export const Serverifier = {
+  setRoute,
+  init,
+};

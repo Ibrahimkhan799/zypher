@@ -26,10 +26,14 @@ function setRoute(api, data) {
     res.send(data);
   });
 }
+setRoute("/");
+var Serverifier = {
+  setRoute,
+  init
+};
 export {
+  Serverifier,
   app,
   express,
-  init,
-  router,
-  setRoute
+  router
 };
