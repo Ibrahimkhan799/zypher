@@ -56,6 +56,26 @@ declare function createDir(directoryName: PathOrFileDescriptor): void;
  */
 declare function is_existsDir(directoryPath: PathOrFileDescriptor): boolean;
 /**
+ * Deletes a directory with the given directory path.
+ * @param {PathOrFileDescriptor} directoryPath - The path of the directory to be deleted.
+ * @throws {Error} - Throws specific errors for different scenarios.
+ */
+declare function deleteDir(directoryPath: PathOrFileDescriptor): void;
+/**
+ * Appends data at the end of the given file.
+ * @param {PathOrFileDescriptor} filePath - The path of the file to which data is appended.
+ * @param {DataTypeExportItem} dataToAppend - The data to append at the end of the file.
+ * @throws {Error} - If the path is not valid, points to a file, contains null value, or the type of value is not a string.
+ */
+declare function insertDataAtEnd(filePath: PathOrFileDescriptor, dataToAppend: DataTypeExportItem): void;
+/**
+ * Appends data at the start of the given file.
+ * @param {DataTypeExportItem} filePath - The path of the file to which data is appended.
+ * @param {DataTypeExportItem} dataToAppend - The data to append at the start of the file.
+ * @throws {Error} - If the path is not valid, points to a file, contains null value, or the type of value is not a string.
+ */
+declare function insertDataAtStart(filePath: PathOrFileDescriptor, dataToAppend: DataTypeExportItem): void;
+/**
  * Checks whether the given target data exists in the given file or not.
  * @param {PathOrFileDescriptor} filePath - The path of the file to which data is appended.
  * @param {DataTypeExportItem} targetData - The data to target in the file.
@@ -74,7 +94,7 @@ declare function is_existsFile(filePath: PathOrFileDescriptor): boolean;
  * Reads the data from a given file and return data.
  * @param {PathOrFileDescriptor} filePath - The path of the file to which data is appended.
  */
-declare function readFile(filePath: PathOrFileDescriptor): string;
+declare function readFileData(filePath: PathOrFileDescriptor): string;
 /**
  * Renames the given directory path with the given new path.
  * @param {PathOrFileDescriptor} oldPath - The path of the directory to rename.
@@ -138,31 +158,5 @@ declare function convertFileSize(sizeInBytes: number, unit?: SizeTypes): string;
  * @param {SizeTypes} unit - The unit of the size of the file to check.
  */
 declare function isValidSizeUnit(unit: SizeTypes): unit is SizeTypes;
-declare const App: {
-    createFile: typeof createFile;
-    renameFile: typeof renameFile;
-    deleteFile: typeof deleteFile;
-    writeData: typeof writeData;
-    createDir: typeof createDir;
-    createFiles: typeof createFiles;
-    renameDir: typeof renameDir;
-    readFile: typeof readFile;
-    getFileStats: typeof getFileStats;
-    getFilesInDirectory: typeof getFilesInDirectory;
-    searchFileInDirectory: typeof searchFileInDirectory;
-    copyFile: typeof copyFile;
-    moveFile: typeof moveFile;
-    copyDirectory: typeof copyDirectory;
-    copyFileToDirectory: typeof copyFileToDirectory;
-    is_existsFile: typeof is_existsFile;
-    is_existsDir: typeof is_existsDir;
-    is_existsData: typeof is_existsData;
-    convertFileSize: typeof convertFileSize;
-    isValidSizeUnit: typeof isValidSizeUnit;
-};
 
-declare namespace functions {
-  export { App as default };
-}
-
-export { functions as App, type DataTypeExportItem, type F, type FileStats, type FilesDescriptor, type PathLike, type PathOrFileDescriptor, type SizeTypes, type TypeOfError };
+export { type DataTypeExportItem, type F, type FileStats, type FilesDescriptor, type PathLike, type PathOrFileDescriptor, type SizeTypes, type TypeOfError, convertFileSize, copyDirectory, copyFile, copyFileToDirectory, createDir, createFile, createFiles, deleteDir, deleteFile, getFileStats, getFilesInDirectory, insertDataAtEnd, insertDataAtStart, isValidSizeUnit, is_existsData, is_existsDir, is_existsFile, moveFile, readFileData, renameDir, renameFile, searchFileInDirectory, writeData };

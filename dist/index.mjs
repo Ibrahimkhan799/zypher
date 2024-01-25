@@ -1,14 +1,4 @@
-var __defProp = Object.defineProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-
 // src/functions.ts
-var functions_exports = {};
-__export(functions_exports, {
-  default: () => functions_default
-});
 import * as fs from "fs";
 import * as path from "path";
 function createFile(fileName) {
@@ -124,6 +114,80 @@ function is_existsDir(directoryPath) {
     }
   }
 }
+function deleteDir(directoryPath) {
+  if (typeof directoryPath !== "string" || directoryPath === null) {
+    throw new Error(
+      "Invalid directory path. Please provide a valid string path."
+    );
+  }
+  if (fs.existsSync(directoryPath)) {
+    if (!fs.lstatSync(directoryPath).isDirectory()) {
+      throw new Error(`Path '${directoryPath}' is not a directory.`);
+    }
+    fs.readdirSync(directoryPath).forEach((file, index) => {
+      const curPath = path.join(directoryPath, file);
+      if (fs.lstatSync(curPath).isDirectory()) {
+        deleteDir(curPath);
+      } else {
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(directoryPath);
+  } else {
+    throw new Error(`Directory '${directoryPath}' does not exist.`);
+  }
+}
+function insertDataAtEnd(filePath, dataToAppend) {
+  try {
+    if (typeof filePath !== "string") {
+      throw new Error("Invalid file path. Path must be a string.");
+    }
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+      throw new Error(
+        "Invalid file path. Path should point to a directory, not a file."
+      );
+    }
+    if (dataToAppend == null) {
+      throw new Error("Data to append is null or undefined.");
+    }
+    if (typeof dataToAppend !== "string") {
+      throw new Error("Invalid data type. Data must be a string.");
+    }
+    fs.appendFile(filePath, dataToAppend, (err) => {
+      if (err) {
+        throw new Error(`Error appending data to the file: ${err.message}`);
+      }
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+function insertDataAtStart(filePath, dataToAppend) {
+  try {
+    if (typeof filePath !== "string" || filePath.trim() === "") {
+      throw new Error("Invalid file path");
+    }
+    if (fs.statSync(filePath).isFile()) {
+      throw new Error("Path points to a file, not a directory");
+    }
+    if (dataToAppend === null || typeof dataToAppend !== "string") {
+      throw new Error("Invalid data to append. It must be a non-null string.");
+    }
+    fs.readFile(filePath, "utf8", (readErr, existingData) => {
+      if (readErr) {
+        throw new Error("Error reading file: " + readErr.message);
+      }
+      const newData = Comment + JSON.stringify(dataToAppend) + existingData;
+      fs.writeFile(filePath, newData, "utf8", (writeErr) => {
+        if (writeErr) {
+          throw new Error("Error writing to file: " + writeErr.message);
+        }
+      });
+    });
+  } catch (error) {
+    throw new Error("Error in insertDataAtStart: " + error.message);
+  }
+}
 function is_existsData(filePath, targetData) {
   try {
     if (!fs.existsSync(filePath)) {
@@ -172,7 +236,7 @@ function is_existsFile(filePath) {
     return false;
   }
 }
-function readFile2(filePath) {
+function readFileData(filePath) {
   try {
     if (typeof filePath !== "string" || filePath.trim() === "") {
       throw new Error("Invalid file path");
@@ -425,29 +489,28 @@ function isValidSizeUnit(unit) {
   const validUnits = ["bytes", "kilobytes", "megabytes", "gigabytes"];
   return validUnits.includes(unit.toLowerCase());
 }
-var App = {
-  createFile,
-  renameFile,
-  deleteFile,
-  writeData,
+export {
+  convertFileSize,
+  copyDirectory,
+  copyFile,
+  copyFileToDirectory,
   createDir,
+  createFile,
   createFiles,
-  renameDir,
-  readFile: readFile2,
+  deleteDir,
+  deleteFile,
   getFileStats,
   getFilesInDirectory,
-  searchFileInDirectory,
-  copyFile,
-  moveFile,
-  copyDirectory,
-  copyFileToDirectory,
-  is_existsFile,
-  is_existsDir,
+  insertDataAtEnd,
+  insertDataAtStart,
+  isValidSizeUnit,
   is_existsData,
-  convertFileSize,
-  isValidSizeUnit
-};
-var functions_default = App;
-export {
-  functions_exports as App
+  is_existsDir,
+  is_existsFile,
+  moveFile,
+  readFileData,
+  renameDir,
+  renameFile,
+  searchFileInDirectory,
+  writeData
 };
