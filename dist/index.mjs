@@ -1,4 +1,14 @@
+var __defProp = Object.defineProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+
 // src/functions.ts
+var functions_exports = {};
+__export(functions_exports, {
+  default: () => functions_default
+});
 import * as fs from "fs";
 import * as path from "path";
 function createFile(fileName) {
@@ -112,80 +122,6 @@ function is_existsDir(directoryPath) {
     } else {
       throw error;
     }
-  }
-}
-function deleteDir(directoryPath) {
-  if (typeof directoryPath !== "string" || directoryPath === null) {
-    throw new Error(
-      "Invalid directory path. Please provide a valid string path."
-    );
-  }
-  if (fs.existsSync(directoryPath)) {
-    if (!fs.lstatSync(directoryPath).isDirectory()) {
-      throw new Error(`Path '${directoryPath}' is not a directory.`);
-    }
-    fs.readdirSync(directoryPath).forEach((file, index) => {
-      const curPath = path.join(directoryPath, file);
-      if (fs.lstatSync(curPath).isDirectory()) {
-        deleteDir(curPath);
-      } else {
-        fs.unlinkSync(curPath);
-      }
-    });
-    fs.rmdirSync(directoryPath);
-  } else {
-    throw new Error(`Directory '${directoryPath}' does not exist.`);
-  }
-}
-function insertDataAtEnd(filePath, dataToAppend) {
-  try {
-    if (typeof filePath !== "string") {
-      throw new Error("Invalid file path. Path must be a string.");
-    }
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-      throw new Error(
-        "Invalid file path. Path should point to a directory, not a file."
-      );
-    }
-    if (dataToAppend == null) {
-      throw new Error("Data to append is null or undefined.");
-    }
-    if (typeof dataToAppend !== "string") {
-      throw new Error("Invalid data type. Data must be a string.");
-    }
-    fs.appendFile(filePath, dataToAppend, (err) => {
-      if (err) {
-        throw new Error(`Error appending data to the file: ${err.message}`);
-      }
-    });
-  } catch (error) {
-    throw error;
-  }
-}
-function insertDataAtStart(filePath, dataToAppend) {
-  try {
-    if (typeof filePath !== "string" || filePath.trim() === "") {
-      throw new Error("Invalid file path");
-    }
-    if (fs.statSync(filePath).isFile()) {
-      throw new Error("Path points to a file, not a directory");
-    }
-    if (dataToAppend === null || typeof dataToAppend !== "string") {
-      throw new Error("Invalid data to append. It must be a non-null string.");
-    }
-    fs.readFile(filePath, "utf8", (readErr, existingData) => {
-      if (readErr) {
-        throw new Error("Error reading file: " + readErr.message);
-      }
-      const newData = Comment + JSON.stringify(dataToAppend) + existingData;
-      fs.writeFile(filePath, newData, "utf8", (writeErr) => {
-        if (writeErr) {
-          throw new Error("Error writing to file: " + writeErr.message);
-        }
-      });
-    });
-  } catch (error) {
-    throw new Error("Error in insertDataAtStart: " + error.message);
   }
 }
 function is_existsData(filePath, targetData) {
@@ -355,7 +291,6 @@ function copyDirectory(source, destination) {
       throw new Error(`Error copying ${file}: ${error.message}`);
     }
   });
-  console.log(`Directory copied from ${source} to ${destination}`);
 }
 function copyFileToDirectory(sourcePath, destinationPath) {
   try {
@@ -405,7 +340,7 @@ function getFilesInDirectory(directoryPath) {
     throw new Error(`Error in getFilesInDirectory: ${error.message}`);
   }
 }
-function searchFileInDirectory(directoryPath, fileName = "") {
+function searchFileInDirectory(directoryPath, fileName) {
   try {
     if (typeof directoryPath !== "string" || typeof fileName !== "string") {
       throw new Error("Both directoryPath and fileName must be strings.");
@@ -490,38 +425,29 @@ function isValidSizeUnit(unit) {
   const validUnits = ["bytes", "kilobytes", "megabytes", "gigabytes"];
   return validUnits.includes(unit.toLowerCase());
 }
-
-// src/types.ts
-var FS;
-((FS2) => {
-  const CreateFile = createFile;
-  const DeleteFile = deleteFile;
-  const RenameFile = renameFile;
-  const WriteData = writeData;
-  const CreateDir = createDir;
-  const Is_existsDir = is_existsDir;
-  const DeleteDir = deleteDir;
-  const InsertDataAtEnd = insertDataAtEnd;
-  const InsertDataAtStart = insertDataAtStart;
-  const Is_existsData = is_existsData;
-  const Is_existsFile = is_existsFile;
-  const ReadFile = readFile2;
-  const RenameDir = renameDir;
-  const MoveFile = moveFile;
-  const CopyFile = copyFile;
-  const CopyFileToDirectory = copyFileToDirectory;
-  const CopyDirectory = copyDirectory;
-  const GetFilesInDirectory = getFilesInDirectory;
-  const SearchFileInDirectory = searchFileInDirectory;
-  const CreateFiles = createFiles;
-  const GetFileStats = getFileStats;
-  const ConvertFileSize = convertFileSize;
-  const IsValidSizeUnit = isValidSizeUnit;
-})(FS || (FS = {}));
-
-// src/index.ts
-var src_default = FS;
+var App = {
+  createFile,
+  renameFile,
+  deleteFile,
+  writeData,
+  createDir,
+  createFiles,
+  renameDir,
+  readFile: readFile2,
+  getFileStats,
+  getFilesInDirectory,
+  searchFileInDirectory,
+  copyFile,
+  moveFile,
+  copyDirectory,
+  copyFileToDirectory,
+  is_existsFile,
+  is_existsDir,
+  is_existsData,
+  convertFileSize,
+  isValidSizeUnit
+};
+var functions_default = App;
 export {
-  FS,
-  src_default as default
+  functions_exports as App
 };
