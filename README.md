@@ -1,4 +1,4 @@
-# zypher
+# zypher_manager
 
 A library that provides predefined functions for file system operations making file managing easy in javascript.
 
@@ -7,14 +7,14 @@ A library that provides predefined functions for file system operations making f
 To install the library, use npm:
 
 ```bash
-npm install zypher@latest
+npm install zypher-manager@latest
 ```
 
 <h2 align="center">Now it's easy to manage files using JavaScript with Zypher!</h2>
 <h1>Usage</h1>
 
 ```js
-const FM = require("zypher");
+const FM = require("zypher-manager");
 // Create a file
 FM.CreateFile("test.js");
 
