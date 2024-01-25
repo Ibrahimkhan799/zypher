@@ -20,7 +20,7 @@ type F<T extends PathOrFileDescriptor | number | FilesDescriptor, R, D extends a
  * @param {PathOrFileDescriptor} fileName - The name of the file to be created.
  * @throws {Error} - If an error occurs during file creation.
  */
-declare function createFile(fileName: PathOrFileDescriptor): void;
+declare function createFile(fileName: PathOrFileDescriptor): boolean;
 /**
  * Rename a file with the given name.
  * @param {string} oldName - The name of the file to be renamed.
@@ -34,14 +34,14 @@ declare function renameFile(oldName: PathOrFileDescriptor, newName: PathOrFileDe
  * @throws {Error} - If the file doesn't exist, if the path is invalid, if the path points to a directory,
  *                  if the file deletion fails, or if the value is not a string.
  */
-declare function deleteFile(fileName: PathOrFileDescriptor): void;
+declare function deleteFile(fileName: PathOrFileDescriptor): boolean;
 /**
  * Writes data to a file with the provided name.
  * @param {PathOrFileDescriptor} fileName - The name of the file to which data is inserted.
  * @param {DataTypeExportItem} data - The data to be inserted.
  * @throws {Error} - If an error occurs during file writing or if validation fails.
  */
-declare function writeData(fileName: PathOrFileDescriptor, data: DataTypeExportItem): void;
+declare function writeData(fileName: PathOrFileDescriptor, data: DataTypeExportItem): boolean;
 /**
  * Create a new directory with the given directory name.
  * @param {PathOrFileDescriptor} directoryName - The name of the directory to be created.
@@ -60,21 +60,21 @@ declare function is_existsDir(directoryPath: PathOrFileDescriptor): boolean;
  * @param {PathOrFileDescriptor} directoryPath - The path of the directory to be deleted.
  * @throws {Error} - Throws specific errors for different scenarios.
  */
-declare function deleteDir(directoryPath: PathOrFileDescriptor): void;
+declare function deleteDir(directoryPath: PathOrFileDescriptor): boolean;
 /**
  * Appends data at the end of the given file.
  * @param {PathOrFileDescriptor} filePath - The path of the file to which data is appended.
  * @param {DataTypeExportItem} dataToAppend - The data to append at the end of the file.
  * @throws {Error} - If the path is not valid, points to a file, contains null value, or the type of value is not a string.
  */
-declare function insertDataAtEnd(filePath: PathOrFileDescriptor, dataToAppend: DataTypeExportItem): void;
+declare function insertDataAtEnd(filePath: PathOrFileDescriptor, dataToAppend: DataTypeExportItem): boolean;
 /**
  * Appends data at the start of the given file.
  * @param {DataTypeExportItem} filePath - The path of the file to which data is appended.
  * @param {DataTypeExportItem} dataToAppend - The data to append at the start of the file.
  * @throws {Error} - If the path is not valid, points to a file, contains null value, or the type of value is not a string.
  */
-declare function insertDataAtStart(filePath: PathOrFileDescriptor, dataToAppend: DataTypeExportItem): void;
+declare function insertDataAtStart(filePath: PathOrFileDescriptor, dataToAppend: DataTypeExportItem): boolean;
 /**
  * Checks whether the given target data exists in the given file or not.
  * @param {PathOrFileDescriptor} filePath - The path of the file to which data is appended.
@@ -100,13 +100,13 @@ declare function readFileData(filePath: PathOrFileDescriptor): string;
  * @param {PathOrFileDescriptor} oldPath - The path of the directory to rename.
  * @param {PathOrFileDescriptor} newPath - The new path of the directory to rename.
  */
-declare function renameDir(oldPath: PathOrFileDescriptor, newPath: PathOrFileDescriptor): void;
+declare function renameDir(oldPath: PathOrFileDescriptor, newPath: PathOrFileDescriptor): false | undefined;
 /**
  * Moves a file to a new given location.
  * @param {PathOrFileDescriptor} sourcePath - The path of the file to move.
  * @param {PathOrFileDescriptor} destinationPath - The path where to move.
  */
-declare function moveFile(sourcePath: PathOrFileDescriptor, destinationPath: PathOrFileDescriptor): void;
+declare function moveFile(sourcePath: PathOrFileDescriptor, destinationPath: PathOrFileDescriptor): boolean;
 /**
  * Copy the file to the given destination file.
  * @param {PathOrFileDescriptor} sourcePath - The path of the file to copy.
@@ -124,12 +124,12 @@ declare function copyDirectory(source: PathOrFileDescriptor, destination: PathOr
  * @param {PathOrFileDescriptor} sourcePath - The path of the file to copy.
  * @param {PathOrFileDescriptor} destinationPath - The path to copy the file to.
  */
-declare function copyFileToDirectory(sourcePath: PathOrFileDescriptor, destinationPath: PathOrFileDescriptor): void;
+declare function copyFileToDirectory(sourcePath: PathOrFileDescriptor, destinationPath: PathOrFileDescriptor): boolean;
 /**
  * Get the path of all the files inside a directory.
  * @param {PathOrFileDescriptor} directoryPath - The path to the directory to look for files.
  */
-declare function getFilesInDirectory(directoryPath: PathOrFileDescriptor): string[];
+declare function getFilesInDirectory(directoryPath: PathOrFileDescriptor): false | string[];
 /**
  * Searches for a file in the specified directory.
  * @param {PathOrFileDescriptor} directoryPath - The path to the directory to look for file.
@@ -140,13 +140,13 @@ declare function searchFileInDirectory(directoryPath: PathOrFileDescriptor, file
  * Creates all the files from a given array of files of path type.
  * @param {FilesDescriptor} fileNames - The array of file names to be created.
  */
-declare function createFiles(fileNames: FilesDescriptor): void;
+declare function createFiles(fileNames: FilesDescriptor): boolean;
 /**
  * Get the stats of the file
  * @param {PathOrFileDescriptor} filePath - The path of the file to get stats for.
  * @param {SizeTypes} sizeUnit - The unit of the size of the file.
  */
-declare function getFileStats(filePath: PathOrFileDescriptor, sizeUnit?: SizeTypes): FileStats | string;
+declare function getFileStats(filePath: PathOrFileDescriptor, sizeUnit?: SizeTypes): FileStats | string | boolean;
 /**
  * Converts the given number of bytes to a string of a file size in specified format.
  * @param {PathOrFileDescriptor} sizeInBytes - The size of the file to convert.

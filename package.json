@@ -1,6 +1,6 @@
 {
   "name": "zypher-manager",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A library that provides predefined functions for file system operations making file managing easy in javascript.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

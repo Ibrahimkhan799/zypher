@@ -13,8 +13,9 @@ function createFile(fileName) {
   }
   try {
     fs.writeFileSync(fileName, "content");
+    return true;
   } catch (error) {
-    throw new Error(`Error creating file: ${error.message}`);
+    return false;
   }
 }
 function renameFile(oldName, newName) {
@@ -52,8 +53,9 @@ function deleteFile(fileName) {
       throw new Error(`Path ${fileName} points to a directory, not a file.`);
     }
     fs.unlinkSync(fileName);
+    return true;
   } catch (error) {
-    throw new Error(`Error deleting file "${fileName}": ${error.message}`);
+    return false;
   }
 }
 function writeData(fileName, data) {
@@ -69,9 +71,9 @@ function writeData(fileName, data) {
       throw new Error("Invalid data type. Please provide a string.");
     }
     fs.writeFileSync(fileName, data);
-    console.log(`Data successfully written to "${fileName}".`);
+    return true;
   } catch (error) {
-    throw new Error(`Error writing data to "${fileName}": ${error.message}`);
+    return false;
   }
 }
 function createDir(directoryName) {
@@ -81,15 +83,17 @@ function createDir(directoryName) {
   fs.mkdir(directoryName, { recursive: true }, (err) => {
     if (err) {
       if (err.code === "ENOENT") {
-        throw new Error(`Invalid path: ${directoryName}. Path does not exist.`);
+        return false;
       } else if (err.code === "EEXIST") {
-        throw new Error(`Directory already exists at path: ${directoryName}.`);
+        return false;
       } else if (err.code === "ENOTDIR") {
-        throw new Error(`Invalid path: ${directoryName}. Not a directory.`);
+        return false;
       } else {
-        throw new Error(
-          `Error creating directory at ${directoryName}: ${err.message}`
-        );
+        return false;
+      }
+    } else {
+      if (!err) {
+        return true;
       }
     }
   });
@@ -133,8 +137,9 @@ function deleteDir(directoryPath) {
       }
     });
     fs.rmdirSync(directoryPath);
+    return true;
   } else {
-    throw new Error(`Directory '${directoryPath}' does not exist.`);
+    return false;
   }
 }
 function insertDataAtEnd(filePath, dataToAppend) {
@@ -155,11 +160,12 @@ function insertDataAtEnd(filePath, dataToAppend) {
     }
     fs.appendFile(filePath, dataToAppend, (err) => {
       if (err) {
-        throw new Error(`Error appending data to the file: ${err.message}`);
+        return false;
       }
     });
+    return true;
   } catch (error) {
-    throw error;
+    return false;
   }
 }
 function insertDataAtStart(filePath, dataToAppend) {
@@ -184,8 +190,9 @@ function insertDataAtStart(filePath, dataToAppend) {
         }
       });
     });
+    return true;
   } catch (error) {
-    throw new Error("Error in insertDataAtStart: " + error.message);
+    return false;
   }
 }
 function is_existsData(filePath, targetData) {
@@ -206,7 +213,7 @@ function is_existsData(filePath, targetData) {
     const dataExists = fileContent.includes(JSON.stringify(targetData));
     return dataExists;
   } catch (error) {
-    throw new Error("Error reading file: " + error.message);
+    return false;
   }
 }
 function is_existsFile(filePath) {
@@ -227,13 +234,12 @@ function is_existsFile(filePath) {
     return true;
   } catch (error) {
     if (error.code === "ENOENT") {
-      throw new Error("Error: File does not exist.");
+      return false;
     } else if (error.code === "EISDIR") {
       throw new Error("Error: Path must point to a file, not a directory.");
     } else {
       throw new Error(`Error checking file existence: ${error.message}`);
     }
-    return false;
   }
 }
 function readFileData(filePath) {
@@ -275,9 +281,8 @@ function renameDir(oldPath, newPath) {
       );
     }
     fs.renameSync(oldPath, newPath);
-    console.log(`Directory renamed successfully from ${oldPath} to ${newPath}`);
   } catch (error) {
-    console.error(`Error renaming directory: ${error.message}`);
+    return false;
   }
 }
 function moveFile(sourcePath, destinationPath) {
@@ -298,11 +303,9 @@ function moveFile(sourcePath, destinationPath) {
   }
   try {
     fs.renameSync(sourcePath, destinationPath);
-    console.log(
-      `File moved successfully from ${sourcePath} to ${destinationPath}`
-    );
+    return true;
   } catch (error) {
-    throw new Error(`Error moving file: ${error.message}`);
+    return false;
   }
 }
 function copyFile(sourcePath, destinationPath) {
@@ -319,15 +322,13 @@ function copyFile(sourcePath, destinationPath) {
   }
   fs.readFile(sourcePath, "utf8", (err, data) => {
     if (err) {
-      throw new Error(`Error reading the file: ${err}`);
+      return false;
     }
     fs.writeFile(destinationPath, data, "utf8", (err2) => {
       if (err2) {
-        throw new Error(`Error writing to the file: ${err2}`);
+        return false;
       }
-      console.log(
-        `File copied successfully from ${sourcePath} to ${destinationPath}`
-      );
+      return true;
     });
   });
 }
@@ -351,8 +352,9 @@ function copyDirectory(source, destination) {
       } else {
         fs.copyFileSync(sourcePath, destPath);
       }
+      return true;
     } catch (error) {
-      throw new Error(`Error copying ${file}: ${error.message}`);
+      return false;
     }
   });
 }
@@ -380,9 +382,9 @@ function copyFileToDirectory(sourcePath, destinationPath) {
       throw new Error("Destination is not a directory.");
     }
     fs.copyFileSync(sourcePath, JSON.stringify(destinationPath));
-    console.log("File copied successfully.");
+    return true;
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    return false;
   }
 }
 function getFilesInDirectory(directoryPath) {
@@ -401,7 +403,7 @@ function getFilesInDirectory(directoryPath) {
     );
     return fileNames;
   } catch (error) {
-    throw new Error(`Error in getFilesInDirectory: ${error.message}`);
+    return false;
   }
 }
 function searchFileInDirectory(directoryPath, fileName) {
@@ -426,22 +428,23 @@ function searchFileInDirectory(directoryPath, fileName) {
 function createFiles(fileNames) {
   try {
     if (!Array.isArray(fileNames)) {
-      throw new Error("Input should be an array of file names.");
+      return false;
     }
     fileNames.forEach((fileName) => {
       createFile(fileName);
     });
+    return true;
   } catch (error) {
-    throw new Error(`Error creating files: ${error.message}`);
+    return false;
   }
 }
 function getFileStats(filePath, sizeUnit = "kilobytes") {
   try {
     if (typeof filePath !== "string" || filePath.trim() === "") {
-      throw new Error("Invalid file path. Please provide a valid string.");
+      return false;
     }
     if (!fs.existsSync(filePath)) {
-      throw new Error("File does not exist. Please provide a valid file path.");
+      return false;
     }
     const stats = fs.statSync(filePath);
     const createdDate = stats.birthtime;
@@ -461,7 +464,7 @@ function getFileStats(filePath, sizeUnit = "kilobytes") {
       fileAbsolutePath
     };
   } catch (error) {
-    throw new Error(`Error: ${error.message}`);
+    return false;
   }
 }
 function convertFileSize(sizeInBytes, unit = "kilobytes") {
@@ -476,9 +479,7 @@ function convertFileSize(sizeInBytes, unit = "kilobytes") {
       const size = sizeInBytes / units[unit.toLowerCase()];
       return size.toFixed(2) + " " + unit.toUpperCase();
     } else {
-      throw new Error(
-        "Invalid size unit. Please use bytes, kilobytes, megabytes, or gigabytes."
-      );
+      return "";
     }
   } else
     throw new Error(
