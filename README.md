@@ -1,6 +1,6 @@
 # zypher
 
-A library that provides predefined functions for file system operations.
+A library that provides predefined functions for file system operations making file managing easy in javascript.
 
 ## Installation
 
@@ -10,7 +10,7 @@ To install the library, use npm:
 npm install zypher@latest
 ```
 
-<h1 align="center">Now it's easy to manage files using JavaScript with Zypher!</h1>
+<h2 align="center">Now it's easy to manage files using JavaScript with Zypher!</h2>
 <h1>Usage</h1>
 
 ```js

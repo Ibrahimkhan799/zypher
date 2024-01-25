@@ -1,7 +1,7 @@
 {
   "name": "zypher",
-  "version": "0.0.2",
-  "description": "A library that provides predefined functions for file system operations making file managing easy than fs.",
+  "version": "0.0.1",
+  "description": "A library that provides predefined functions for file system operations making file managing easy in javascript.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
