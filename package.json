@@ -1,7 +1,7 @@
 {
-  "name": "serverifier",
-  "version": "1.1.1",
-  "description": "A library to use server functions inside a client application.",
+  "name": "zypher",
+  "version": "0.0.2",
+  "description": "A library that provides predefined functions for file system operations making file managing easy than fs.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -10,18 +10,28 @@
     "run": "node index.js"
   },
   "keywords": [
+    "file",
+    "file system",
+    "file manager",
+    "file manipulation",
+    "fs",
     "node",
-    "npm",
-    "express",
-    "router"
+    "delete",
+    "remove",
+    "touch",
+    "output",
+    "extra",
+    "read",
+    "mkdir",
+    "copy",
+    "directory"
+  ],
+  "files": [
+    "LICENSE"
   ],
   "author": "Ibrahim Khan",
   "license": "MIT",
-  "dependencies": {
-    "express": "^4.18.2"
-  },
   "devDependencies": {
-    "@types/express": "^4.17.21",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
   }

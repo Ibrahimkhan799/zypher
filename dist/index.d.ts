@@ -1,19 +1,19 @@
-import { Request, Response } from 'express';
+interface FileStats {
+    createdDate: Date;
+    lastModifiedDate: Date;
+    fileSize: string;
+    fileExtension: string;
+    fileParentDirectory: string;
+    fileRelativePath: string;
+    fileAbsolutePath: string;
+}
+type PathLike = string | URL | Buffer;
+type DataTypeExportItem = string;
+type PathOrFileDescriptor = PathLike;
+type FilesDescriptor = Array<PathOrFileDescriptor>;
+type TypeOfError = any;
+type SizeTypes = "bytes" | "kilobytes" | "megabytes" | "gigabytes";
+declare namespace FS {
+}
 
-type port = number;
-type route = string;
-type api = string;
-type data = object | string | undefined | null | JSON;
-type ApiCallbackProps = {
-    req: Request;
-    res: Response;
-};
-
-declare function init(port?: port, route?: route): void;
-declare function setRoute(api: api, data?: data): void;
-
-declare const express: any;
-declare const router: any;
-declare const app: any;
-
-export { type ApiCallbackProps, type api, app, type data, express, init, type port, type route, router, setRoute };
+export { type DataTypeExportItem, FS, type FileStats, type FilesDescriptor, type PathLike, type PathOrFileDescriptor, type SizeTypes, type TypeOfError, FS as default };

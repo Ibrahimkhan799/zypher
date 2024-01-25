@@ -5,13 +5,13 @@
     "esModuleInterop": true,
     "strictNullChecks": true,
     "target": "ES2022",
-    "moduleResolution": "Node10",
-    "module": "CommonJS",
+    "moduleResolution": "Node16",
+    "module": "Node16",
     "declaration": true,
     "isolatedModules": true,
     "noEmit": true,
     "outDir": "dist"
   },
-  "include": ["lib"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

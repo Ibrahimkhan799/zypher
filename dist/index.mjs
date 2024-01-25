@@ -1,35 +1,527 @@
-var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
-  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
-}) : x)(function(x) {
-  if (typeof require !== "undefined")
-    return require.apply(this, arguments);
-  throw Error('Dynamic require of "' + x + '" is not supported');
-});
-
-// lib/variables.ts
-var express = __require("express");
-var router = express.Router();
-var app = express();
-
-// lib/functions.ts
-function init(port, route) {
-  port = port || 3e3;
-  route = route || "/";
-  app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
-  });
-  app.use(route, router);
+// src/functions.ts
+import * as fs from "fs";
+import * as path from "path";
+function createFile(fileName) {
+  if (typeof fileName !== "string") {
+    throw new Error("File name must be a string.");
+  }
+  if (!fileName.trim()) {
+    throw new Error("File name cannot be empty.");
+  }
+  if (fs.existsSync(fileName)) {
+    throw new Error(`File ${fileName} already exists.`);
+  }
+  try {
+    fs.writeFileSync(fileName, "content");
+  } catch (error) {
+    throw new Error(`Error creating file: ${error.message}`);
+  }
 }
-function setRoute(api, data) {
-  data = data || "Just Created a new route using Serverifier.";
-  router.get(api, ({ req, res }) => {
-    res.send(data);
+function renameFile(oldName, newName) {
+  try {
+    if (!fs.existsSync(oldName)) {
+      throw new Error(`File ${oldName} does not exist.`);
+    }
+    const isDirectory = fs.statSync(oldName).isDirectory();
+    if (isDirectory) {
+      throw new Error(`${oldName} is a directory. Cannot rename a directory.`);
+    }
+    if (newName === null || newName === void 0) {
+      throw new Error(`New file name cannot be null or undefined.`);
+    }
+    if (typeof newName !== "string") {
+      throw new Error(`Invalid file name type. Expected a string.`);
+    }
+    fs.renameSync(oldName, newName);
+  } catch (error) {
+    throw new Error(`Error renaming file "${oldName}": ${error.message}`);
+  }
+}
+function deleteFile(fileName) {
+  if (typeof fileName !== "string") {
+    throw new Error(
+      `Invalid file name. Expected a string, but received ${typeof fileName}.`
+    );
+  }
+  if (!fs.existsSync(fileName)) {
+    throw new Error(`File ${fileName} does not exist.`);
+  }
+  try {
+    const stat = fs.statSync(fileName);
+    if (!stat.isFile()) {
+      throw new Error(`Path ${fileName} points to a directory, not a file.`);
+    }
+    fs.unlinkSync(fileName);
+  } catch (error) {
+    throw new Error(`Error deleting file "${fileName}": ${error.message}`);
+  }
+}
+function writeData(fileName, data) {
+  try {
+    if (!path.isAbsolute(JSON.stringify(fileName))) {
+      throw new Error("Invalid file path. Please provide an absolute path.");
+    }
+    const stats = fs.statSync(fileName);
+    if (!stats.isFile()) {
+      throw new Error(`The path "${fileName}" is not a valid file.`);
+    }
+    if (typeof data !== "string") {
+      throw new Error("Invalid data type. Please provide a string.");
+    }
+    fs.writeFileSync(fileName, data);
+    console.log(`Data successfully written to "${fileName}".`);
+  } catch (error) {
+    throw new Error(`Error writing data to "${fileName}": ${error.message}`);
+  }
+}
+function createDir(directoryName) {
+  if (typeof directoryName !== "string" || !directoryName.trim()) {
+    throw new Error("Invalid directory name. Please provide a valid string.");
+  }
+  fs.mkdir(directoryName, { recursive: true }, (err) => {
+    if (err) {
+      if (err.code === "ENOENT") {
+        throw new Error(`Invalid path: ${directoryName}. Path does not exist.`);
+      } else if (err.code === "EEXIST") {
+        throw new Error(`Directory already exists at path: ${directoryName}.`);
+      } else if (err.code === "ENOTDIR") {
+        throw new Error(`Invalid path: ${directoryName}. Not a directory.`);
+      } else {
+        throw new Error(
+          `Error creating directory at ${directoryName}: ${err.message}`
+        );
+      }
+    }
   });
 }
+function is_existsDir(directoryPath) {
+  try {
+    fs.statSync(directoryPath);
+    if (!fs.lstatSync(directoryPath).isDirectory()) {
+      throw new Error(`Path "${directoryPath}" is not a directory.`);
+    }
+    return true;
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return false;
+    }
+    if (error instanceof TypeError && error.message.includes("null")) {
+      throw new Error("The provided path is null.");
+    } else if (error instanceof TypeError && error.message.includes("string")) {
+      throw new Error("The provided path is not a string.");
+    } else {
+      throw error;
+    }
+  }
+}
+function deleteDir(directoryPath) {
+  if (typeof directoryPath !== "string" || directoryPath === null) {
+    throw new Error(
+      "Invalid directory path. Please provide a valid string path."
+    );
+  }
+  if (fs.existsSync(directoryPath)) {
+    if (!fs.lstatSync(directoryPath).isDirectory()) {
+      throw new Error(`Path '${directoryPath}' is not a directory.`);
+    }
+    fs.readdirSync(directoryPath).forEach((file, index) => {
+      const curPath = path.join(directoryPath, file);
+      if (fs.lstatSync(curPath).isDirectory()) {
+        deleteDir(curPath);
+      } else {
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(directoryPath);
+  } else {
+    throw new Error(`Directory '${directoryPath}' does not exist.`);
+  }
+}
+function insertDataAtEnd(filePath, dataToAppend) {
+  try {
+    if (typeof filePath !== "string") {
+      throw new Error("Invalid file path. Path must be a string.");
+    }
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+      throw new Error(
+        "Invalid file path. Path should point to a directory, not a file."
+      );
+    }
+    if (dataToAppend == null) {
+      throw new Error("Data to append is null or undefined.");
+    }
+    if (typeof dataToAppend !== "string") {
+      throw new Error("Invalid data type. Data must be a string.");
+    }
+    fs.appendFile(filePath, dataToAppend, (err) => {
+      if (err) {
+        throw new Error(`Error appending data to the file: ${err.message}`);
+      }
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+function insertDataAtStart(filePath, dataToAppend) {
+  try {
+    if (typeof filePath !== "string" || filePath.trim() === "") {
+      throw new Error("Invalid file path");
+    }
+    if (fs.statSync(filePath).isFile()) {
+      throw new Error("Path points to a file, not a directory");
+    }
+    if (dataToAppend === null || typeof dataToAppend !== "string") {
+      throw new Error("Invalid data to append. It must be a non-null string.");
+    }
+    fs.readFile(filePath, "utf8", (readErr, existingData) => {
+      if (readErr) {
+        throw new Error("Error reading file: " + readErr.message);
+      }
+      const newData = Comment + JSON.stringify(dataToAppend) + existingData;
+      fs.writeFile(filePath, newData, "utf8", (writeErr) => {
+        if (writeErr) {
+          throw new Error("Error writing to file: " + writeErr.message);
+        }
+      });
+    });
+  } catch (error) {
+    throw new Error("Error in insertDataAtStart: " + error.message);
+  }
+}
+function is_existsData(filePath, targetData) {
+  try {
+    if (!fs.existsSync(filePath)) {
+      throw new Error("Invalid path: " + filePath);
+    }
+    const stats = fs.statSync(filePath);
+    if (!stats.isDirectory()) {
+      throw new Error(
+        "Invalid path: " + filePath + " is a file, not a directory."
+      );
+    }
+    if (targetData === null || typeof targetData !== "string") {
+      throw new Error("Invalid target data: " + targetData);
+    }
+    const fileContent = fs.readFileSync(filePath, "utf8");
+    const dataExists = fileContent.includes(JSON.stringify(targetData));
+    return dataExists;
+  } catch (error) {
+    throw new Error("Error reading file: " + error.message);
+  }
+}
+function is_existsFile(filePath) {
+  try {
+    if (typeof filePath !== "string") {
+      throw new Error("Invalid path: Path must be a string.");
+    }
+    if (!filePath.trim()) {
+      throw new Error("Invalid path: Path cannot be empty.");
+    }
+    fs.accessSync(filePath, fs.constants.F_OK);
+    const stats = fs.statSync(filePath);
+    if (!stats.isDirectory()) {
+      throw new Error(
+        "Invalid path: Path must point to a directory, not a file."
+      );
+    }
+    return true;
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      throw new Error("Error: File does not exist.");
+    } else if (error.code === "EISDIR") {
+      throw new Error("Error: Path must point to a file, not a directory.");
+    } else {
+      throw new Error(`Error checking file existence: ${error.message}`);
+    }
+    return false;
+  }
+}
+function readFile2(filePath) {
+  try {
+    if (typeof filePath !== "string" || filePath.trim() === "") {
+      throw new Error("Invalid file path");
+    }
+    if (!fs.existsSync(filePath)) {
+      throw new Error("File does not exist");
+    }
+    const stats = fs.statSync(filePath);
+    if (!stats.isFile()) {
+      throw new Error("The provided path is not a file");
+    }
+    const content = fs.readFileSync(filePath, "utf8");
+    return content;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw `Error reading file: ${error.message}`;
+    } else {
+      throw "An unexpected error occurred while reading the file";
+    }
+  }
+}
+function renameDir(oldPath, newPath) {
+  try {
+    if (!oldPath || !newPath || typeof oldPath !== "string" || typeof newPath !== "string") {
+      throw new Error("Invalid paths. Please provide valid string paths.");
+    }
+    if (!fs.existsSync(oldPath)) {
+      throw new Error(`The directory at ${oldPath} does not exist.`);
+    }
+    if (!fs.statSync(oldPath).isDirectory()) {
+      throw new Error(`The path ${oldPath} is not a directory.`);
+    }
+    if (fs.existsSync(newPath)) {
+      throw new Error(
+        `The directory at ${newPath} already exists. Choose a different destination.`
+      );
+    }
+    fs.renameSync(oldPath, newPath);
+    console.log(`Directory renamed successfully from ${oldPath} to ${newPath}`);
+  } catch (error) {
+    console.error(`Error renaming directory: ${error.message}`);
+  }
+}
+function moveFile(sourcePath, destinationPath) {
+  if (typeof sourcePath !== "string" || typeof destinationPath !== "string") {
+    throw new Error("Source and destination paths must be strings.");
+  }
+  if (!fs.existsSync(sourcePath)) {
+    throw new Error(`Source file '${sourcePath}' does not exist.`);
+  }
+  if (!fs.statSync(sourcePath).isFile()) {
+    throw new Error(`Source '${sourcePath}' is not a valid file.`);
+  }
+  const destinationDirectory = destinationPath.split("/").slice(0, -1).join("/");
+  if (!fs.existsSync(destinationDirectory)) {
+    throw new Error(
+      `Destination directory '${destinationDirectory}' does not exist.`
+    );
+  }
+  try {
+    fs.renameSync(sourcePath, destinationPath);
+    console.log(
+      `File moved successfully from ${sourcePath} to ${destinationPath}`
+    );
+  } catch (error) {
+    throw new Error(`Error moving file: ${error.message}`);
+  }
+}
+function copyFile(sourcePath, destinationPath) {
+  if (typeof sourcePath !== "string" || typeof destinationPath !== "string") {
+    throw new Error("Source and destination paths must be strings.");
+  }
+  if (!sourcePath || !destinationPath) {
+    throw new Error(
+      "Source and destination paths cannot be null or undefined."
+    );
+  }
+  if (!fs.existsSync(sourcePath)) {
+    throw new Error(`Source file '${sourcePath}' does not exist.`);
+  }
+  fs.readFile(sourcePath, "utf8", (err, data) => {
+    if (err) {
+      throw new Error(`Error reading the file: ${err}`);
+    }
+    fs.writeFile(destinationPath, data, "utf8", (err2) => {
+      if (err2) {
+        throw new Error(`Error writing to the file: ${err2}`);
+      }
+      console.log(
+        `File copied successfully from ${sourcePath} to ${destinationPath}`
+      );
+    });
+  });
+}
+function copyDirectory(source, destination) {
+  if (typeof source !== "string" || typeof destination !== "string") {
+    throw new Error("Source and destination must be strings.");
+  }
+  if (!fs.existsSync(source)) {
+    throw new Error("Source directory does not exist.");
+  }
+  if (!fs.existsSync(destination)) {
+    fs.mkdirSync(destination);
+  }
+  const files = fs.readdirSync(source);
+  files.forEach((file) => {
+    const sourcePath = path.join(source, file);
+    const destPath = path.join(destination, file);
+    try {
+      if (fs.lstatSync(sourcePath).isDirectory()) {
+        copyDirectory(sourcePath, destPath);
+      } else {
+        fs.copyFileSync(sourcePath, destPath);
+      }
+    } catch (error) {
+      throw new Error(`Error copying ${file}: ${error.message}`);
+    }
+  });
+  console.log(`Directory copied from ${source} to ${destination}`);
+}
+function copyFileToDirectory(sourcePath, destinationPath) {
+  try {
+    if (typeof sourcePath !== "string" || sourcePath.trim() === "") {
+      throw new Error("Invalid source path.");
+    }
+    if (!fs.existsSync(sourcePath)) {
+      throw new Error("Source file does not exist.");
+    }
+    const sourceStats = fs.statSync(sourcePath);
+    if (!sourceStats.isFile()) {
+      throw new Error("Source is not a file.");
+    }
+    if (!fs.existsSync(path.dirname(JSON.stringify(destinationPath)))) {
+      fs.mkdirSync(path.dirname(JSON.stringify(destinationPath)), {
+        recursive: true
+      });
+    }
+    const destinationStats = fs.statSync(
+      path.dirname(JSON.stringify(destinationPath))
+    );
+    if (!destinationStats.isDirectory()) {
+      throw new Error("Destination is not a directory.");
+    }
+    fs.copyFileSync(sourcePath, JSON.stringify(destinationPath));
+    console.log("File copied successfully.");
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+}
+function getFilesInDirectory(directoryPath) {
+  try {
+    if (typeof directoryPath !== "string") {
+      throw new Error(
+        "Input must be a string representing the directory path."
+      );
+    }
+    if (!fs.existsSync(directoryPath)) {
+      throw new Error("Invalid directory path. Please provide a valid path.");
+    }
+    const files = fs.readdirSync(directoryPath);
+    const fileNames = files.filter(
+      (fileName) => fs.statSync(`${directoryPath}/${fileName}`).isFile()
+    );
+    return fileNames;
+  } catch (error) {
+    throw new Error(`Error in getFilesInDirectory: ${error.message}`);
+  }
+}
+function searchFileInDirectory(directoryPath, fileName = "") {
+  try {
+    if (typeof directoryPath !== "string" || typeof fileName !== "string") {
+      throw new Error("Both directoryPath and fileName must be strings.");
+    }
+    if (!fs.existsSync(directoryPath) || !fs.statSync(directoryPath).isDirectory()) {
+      throw new Error("Invalid directory path.");
+    }
+    const files = fs.readdirSync(directoryPath);
+    for (const file of files) {
+      if (file === fileName) {
+        return path.join(directoryPath, file);
+      }
+    }
+    return null;
+  } catch (error) {
+    throw new Error(`Error searching for the file: ${error.message}`);
+  }
+}
+function createFiles(fileNames) {
+  try {
+    if (!Array.isArray(fileNames)) {
+      throw new Error("Input should be an array of file names.");
+    }
+    fileNames.forEach((fileName) => {
+      createFile(fileName);
+    });
+  } catch (error) {
+    throw new Error(`Error creating files: ${error.message}`);
+  }
+}
+function getFileStats(filePath, sizeUnit = "kilobytes") {
+  try {
+    if (typeof filePath !== "string" || filePath.trim() === "") {
+      throw new Error("Invalid file path. Please provide a valid string.");
+    }
+    if (!fs.existsSync(filePath)) {
+      throw new Error("File does not exist. Please provide a valid file path.");
+    }
+    const stats = fs.statSync(filePath);
+    const createdDate = stats.birthtime;
+    const lastModifiedDate = stats.mtime;
+    const fileSize = convertFileSize(stats.size, sizeUnit);
+    const fileExtension = path.extname(filePath);
+    const fileParentDirectory = path.dirname(filePath);
+    const fileRelativePath = path.relative(process.cwd(), filePath);
+    const fileAbsolutePath = path.resolve(filePath);
+    return {
+      createdDate,
+      lastModifiedDate,
+      fileSize,
+      fileExtension,
+      fileParentDirectory,
+      fileRelativePath,
+      fileAbsolutePath
+    };
+  } catch (error) {
+    throw new Error(`Error: ${error.message}`);
+  }
+}
+function convertFileSize(sizeInBytes, unit = "kilobytes") {
+  if (unit && typeof unit === "string") {
+    if (isValidSizeUnit(unit)) {
+      const units = {
+        bytes: 1,
+        kilobytes: 1024,
+        megabytes: 1024 * 1024,
+        gigabytes: 1024 * 1024 * 1024
+      };
+      const size = sizeInBytes / units[unit.toLowerCase()];
+      return size.toFixed(2) + " " + unit.toUpperCase();
+    } else {
+      throw new Error(
+        "Invalid size unit. Please use bytes, kilobytes, megabytes, or gigabytes."
+      );
+    }
+  } else
+    throw new Error(
+      unit ? `Invalid unit type expected string reieved ${typeof unit}` : "unit is not specified"
+    );
+}
+function isValidSizeUnit(unit) {
+  const validUnits = ["bytes", "kilobytes", "megabytes", "gigabytes"];
+  return validUnits.includes(unit.toLowerCase());
+}
+
+// src/types.ts
+var FS;
+((FS2) => {
+  const CreateFile = createFile;
+  const DeleteFile = deleteFile;
+  const RenameFile = renameFile;
+  const WriteData = writeData;
+  const CreateDir = createDir;
+  const Is_existsDir = is_existsDir;
+  const DeleteDir = deleteDir;
+  const InsertDataAtEnd = insertDataAtEnd;
+  const InsertDataAtStart = insertDataAtStart;
+  const Is_existsData = is_existsData;
+  const Is_existsFile = is_existsFile;
+  const ReadFile = readFile2;
+  const RenameDir = renameDir;
+  const MoveFile = moveFile;
+  const CopyFile = copyFile;
+  const CopyFileToDirectory = copyFileToDirectory;
+  const CopyDirectory = copyDirectory;
+  const GetFilesInDirectory = getFilesInDirectory;
+  const SearchFileInDirectory = searchFileInDirectory;
+  const CreateFiles = createFiles;
+  const GetFileStats = getFileStats;
+  const ConvertFileSize = convertFileSize;
+  const IsValidSizeUnit = isValidSizeUnit;
+})(FS || (FS = {}));
+
+// src/index.ts
+var src_default = FS;
 export {
-  app,
-  express,
-  init,
-  router,
-  setRoute
+  FS,
+  src_default as default
 };
