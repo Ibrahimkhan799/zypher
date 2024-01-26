@@ -118,8 +118,8 @@ function deleteFile(fileName) {
 }
 function writeData(fileName, data) {
   try {
-    if (!path.isAbsolute(JSON.stringify(fileName))) {
-      throw new Error("Invalid file path. Please provide an absolute path.");
+    if (!fs.existsSync(fileName)) {
+      fs.writeFileSync(fileName, "");
     }
     const stats = fs.statSync(fileName);
     if (!stats.isFile()) {
@@ -131,6 +131,7 @@ function writeData(fileName, data) {
     fs.writeFileSync(fileName, data);
     return true;
   } catch (error) {
+    console.error(`Error writing data to "${fileName}": ${error.message}`);
     return false;
   }
 }
@@ -149,11 +150,8 @@ function createDir(directoryName) {
       } else {
         return false;
       }
-    } else {
-      if (!err) {
-        return true;
-      }
     }
+    return true;
   });
 }
 function is_existsDir(directoryPath) {
